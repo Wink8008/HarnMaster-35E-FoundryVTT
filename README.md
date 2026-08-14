@@ -174,6 +174,9 @@ ln $RELEASEDIR/$HM3FILE.json $RELEASEDIR/system.json
 echo "Finished packaging HarnMaster 3 $VERSION"
 ```
 
+To rebuild Database Compendium files from Compendium .js files after a change you can run build-packs.bat
+Foundry needs these Database files to correctly show the compendiums.
+
 This script depends on the `foundryvtt-cli` package in order to run; see https://github.com/foundryvtt/foundryvtt-cli.  This package, in turn, requires Node.js to be installed.
 
 You can then unzip the ZIP file into your `$FOUNDRY_DATA_DIR/systems/hm3` directory (create that directory if it doesn't exist).

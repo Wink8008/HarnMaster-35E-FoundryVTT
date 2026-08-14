@@ -75,12 +75,12 @@ Hooks.once('init', async function () {
         trait: "Trait"    
     };
     CONFIG.Combat.documentClass = HarnMasterCombat;
-    CONFIG.TinyMCE.style_formats[0].items.push({
-        title: 'Highlight',
-        block: 'section',
-        classes: 'highlight',
-        wrapper: true
-    })
+    //CONFIG.TinyMCE.style_formats[0].items.push({
+    //    title: 'Highlight',
+    //    block: 'section',
+    //    classes: 'highlight',
+    //    wrapper: true
+    //})
 
     // Register sheet application classes
     Actors.unregisterSheet("core", ActorSheet);
@@ -124,6 +124,15 @@ Hooks.once('init', async function () {
         return str.toLowerCase();
     });
 
+    Handlebars.registerHelper('select', function (value, options) {
+        const html = options.fn(this);
+
+        return html.replace(
+            new RegExp(' value="' + value + '"', 'g'),
+            '$& selected="selected"'
+        );
+    });
+
     // Add a font selector dropdown to the TineMCE editor
     //CONFIG.TinyMCE.toolbar = "styleselect forecolor backcolor bullist numlist image table hr link removeformat code fontselect fontsizeselect save";
     //CONFIG.TinyMCE.toolbar = "styles bullist numlist image table hr link removeformat code fontselect save";
@@ -133,7 +142,9 @@ Hooks.once('init', async function () {
     // These are the fonts we add
     let extraFonts = "Martel=Martel;Roboto=Roboto;Lakise=Lakise;Runic=Runic;Lankorian Blackhand=Lankorian Blackhand";
     // Configure the TinyMCE font drop-down (note: Monk's Enhanced Journal will overwrite this)
-    CONFIG.TinyMCE.font_formats = (CONFIG.TinyMCE.font_formats?CONFIG.TinyMCE.font_formats:defaultFonts) + ";"+extraFonts;
+
+    //CONFIG.TinyMCE.font_formats = (CONFIG.TinyMCE.font_formats?CONFIG.TinyMCE.font_formats:defaultFonts) + ";"+extraFonts;
+
     // Register the extra fonts within Foundry itsel (e.g. Text drawing tool)
 //    let fontFamilies = extraFonts.split(";").map(f => f.split("=")[0]).filter(f => f.length);
 //    fontFamilies.forEach(f => CONFIG.fontFamilies.push(f));
@@ -149,8 +160,10 @@ Hooks.on("renderChatMessage", (app, html, data) => {
     // Display action buttons
     combat.displayChatActionButtons(app, html, data);
 });
-Hooks.on('renderChatLog', (app, html, data) => HarnMasterActor.chatListeners(html));
-Hooks.on('renderChatPopout', (app, html, data) => HarnMasterActor.chatListeners(html));
+//Hooks.on('renderChatLog', (app, html, data) => HarnMasterActor.chatListeners(html));
+//Hooks.on('renderChatPopout', (app, html, data) => HarnMasterActor.chatListeners(html));
+Hooks.on('renderChatLog', (app, html, data) => HarnMasterActor.chatListeners($(html)));
+Hooks.on('renderChatPopout', (app, html, data) => HarnMasterActor.chatListeners($(html)));
 
 /**
  * Active Effects need to expire at certain times, so keep track of that here

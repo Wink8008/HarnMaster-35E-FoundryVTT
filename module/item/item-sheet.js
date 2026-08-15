@@ -1,11 +1,12 @@
 import { onManageActiveEffect } from '../effect.js';
 import * as utility from '../utility.js';
+const ItemSheetV1 = foundry.appv1.sheets.ItemSheet;
 
 /**
  * Extend the basic ItemSheet with some very simple modifications
  * @extends {ItemSheet}
  */
-export class HarnMasterItemSheet extends ItemSheet {
+export class HarnMasterItemSheet extends ItemSheetV1 {
 
   /** @override */
   static get defaultOptions() {

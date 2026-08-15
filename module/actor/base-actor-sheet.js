@@ -4,12 +4,13 @@ import { HarnMasterActor } from "./actor.js";
 import * as utility from '../utility.js';
 import * as macros from '../macros.js';
 import { onManageActiveEffect } from '../effect.js';
+const ActorSheetV1 = foundry.appv1.sheets.ActorSheet;
 
 /**
  * Extend the basic ActorSheet with some common capabilities
  * @extends {ActorSheet}
  */
-export class HarnMasterBaseActorSheet extends ActorSheet {
+export class HarnMasterBaseActorSheet extends ActorSheetV1 {
 
     /** @override */
     getData() {
@@ -261,8 +262,11 @@ export class HarnMasterBaseActorSheet extends ActorSheet {
             targetName: this.actor.name,
             maxItems: item.system.quantity,
         };
-
-        const dlghtml = await renderTemplate(dlgTemplate, dialogData);
+        
+        const dlghtml = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
 
         // Create the dialog window
         return Dialog.prompt({
@@ -782,7 +786,7 @@ export class HarnMasterBaseActorSheet extends ActorSheet {
             extraLabel: extraLabel,
         };
 
-        const dlghtml = await renderTemplate(dlgTemplate, dialogData);
+        const dlghtml = await foundry.applications.handlebars.renderTemplate(dlgTemplate, dialogData);        
 
         // Create the dialog window
         return Dialog.prompt({
@@ -842,7 +846,7 @@ export class HarnMasterBaseActorSheet extends ActorSheet {
         // Only process inventory ("gear") items, otherwise ignore
         if (item.type.endsWith('gear')) {
             const attr = "system.isCarried";
-            return item.update({ [attr]: !getProperty(item, attr) });
+            return item.update({ [attr]: !foundry.utils.getProperty(item, attr) });
         }
 
         return null;
@@ -861,7 +865,7 @@ export class HarnMasterBaseActorSheet extends ActorSheet {
         // Only process inventory ("gear") items, otherwise ignore
         if (item.type.endsWith('gear')) {
             const attr = "system.isEquipped";
-            return item.update({ [attr]: !getProperty(item, attr) });
+            return item.update({ [attr]: !foundry.utils.getProperty(item, attr) });
         }
 
         return null;
@@ -968,13 +972,15 @@ export class HarnMasterBaseActorSheet extends ActorSheet {
 
                 const chatTemplate = 'systems/hm3/templates/chat/esoteric-desc-card.html';
 
-                const html = await renderTemplate(chatTemplate, chatData);
+                const html = await foundry.applications.handlebars.renderTemplate(
+                    chatTemplate,
+                    chatData
+                );
 
                 const messageData = {
                     user: game.user.id,
                     speaker: ChatMessage.getSpeaker(),
-                    content: html.trim(),
-                    type: CONST.CHAT_MESSAGE_TYPES.OTHER
+                    content: html.trim()
                 };
 
                 // Create a chat message

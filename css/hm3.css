@@ -844,9 +844,15 @@ section.highlight {
 .hm3 .items .items-list .item-controls .active {
   color: #4b4a44;
 }
-.hm3 .items .items-list .item-controls-wide {
-  flex: 0 0 65px;
+/*.hm3 .items .items-list .item-controls-wide {
+  flex: 0 0 100px;
   text-align: right;
+}*/
+.hm3 .items .items-list .item-controls-wide {
+    flex: 0 0 100px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
 }
 .hm3 .items .items-list .item-controls-wide .item-control {
   flex: 0 0 22px;

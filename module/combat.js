@@ -118,13 +118,15 @@ export async function missileAttack(attackToken, defendToken, missileItem) {
         visibleActorId: defendToken.actor.id
     };
 
-    const html = await renderTemplate(chatTemplate, chatTemplateData);
+    const html = await foundry.applications.handlebars.renderTemplate(
+        template,
+        data
+    );
 
     const messageData = {
         user: game.user.id,
         speaker: speaker,
-        content: html.trim(),
-        type: CONST.CHAT_MESSAGE_TYPES.OTHER
+        content: html.trim()
     };
 
     const messageOptions = {};
@@ -132,7 +134,7 @@ export async function missileAttack(attackToken, defendToken, missileItem) {
     // Create a chat message
     await ChatMessage.create(messageData, messageOptions);
     if (game.settings.get('hm3', 'combatAudio')) {
-        AudioHelper.play({src: "sounds/drums.wav", autoplay: true, loop: false}, true);
+        foundry.audio.AudioHelper.play({src: "sounds/drums.wav", autoplay: true, loop: false}, true);
     }
 
     return chatTemplateData;
@@ -249,13 +251,15 @@ export async function meleeAttack(attackToken, defendToken, weaponItem=null) {
         visibleActorId: defendToken.actor.id
     };
 
-    const html = await renderTemplate(chatTemplate, chatTemplateData);
+    const html = await foundry.applications.handlebars.renderTemplate(
+        chatTemplate,
+        chatTemplateData
+    );
 
     const messageData = {
         user: game.user.id,
         speaker: speaker,
-        content: html.trim(),
-        type: CONST.CHAT_MESSAGE_TYPES.OTHER
+        content: html.trim()
     };
 
     const messageOptions = {};
@@ -263,7 +267,7 @@ export async function meleeAttack(attackToken, defendToken, weaponItem=null) {
     // Create a chat message
     await ChatMessage.create(messageData, messageOptions);
     if (game.settings.get('hm3', 'combatAudio')) {
-        AudioHelper.play({src: "sounds/drums.wav", autoplay: true, loop: false}, true);
+        foundry.audio.AudioHelper.play({src: "sounds/drums.wav", autoplay: true, loop: false}, true);
     }
 
     return chatTemplateData;
@@ -294,7 +298,7 @@ async function selectWeaponDialog(options) {
     }
     dialogOptions.prompt = options.prompt ? options.prompt : 'Please select your weapon';
     
-    const dlghtml = await renderTemplate(queryWeaponDialog, dialogOptions);
+    const dlghtml = await foundry.applications.handlebars.renderTemplate(queryWeaponDialog, dialogOptions);
 
     // Request weapon name
     return Dialog.prompt({
@@ -413,7 +417,7 @@ async function attackDialog(options) {
     dialogOptions.title = `${options.attackerName} vs. ${options.defenderName} ${options.type} with ${options.weapon.name}`;
 
     const attackDialogTemplate = "systems/hm3/templates/dialog/attack-dialog.html";
-    const dlghtml = await renderTemplate(attackDialogTemplate, dialogOptions);
+    const dlghtml = await foundry.applications.handlebars.renderTemplate(attackDialogTemplate, dialogOptions);
 
     // Request weapon details
     return Dialog.prompt({
@@ -672,19 +676,16 @@ export async function meleeCounterstrikeResume(atkToken, defToken, atkWeaponName
     /*-----------------------------------------------------
      *    Attack Chat
      *----------------------------------------------------*/
-    let html = await renderTemplate(chatTemplate, atkChatData);
+    let html = await foundry.applications.handlebars.renderTemplate(chatTemplate, atkChatData);
 
     let messageData = {
         user: game.user.id,
         speaker: speaker,
         content: html.trim()
     };
-    if (combatResult.outcome.atkDice) {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
+    if (combatResult.outcome.atkDice) {        
         messageData.sound = CONFIG.sounds.dice;
         messageData.roll = atkImpactRoll;
-    } else {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.OTHER;
     }
 
     const messageOptions = {};
@@ -695,19 +696,16 @@ export async function meleeCounterstrikeResume(atkToken, defToken, atkWeaponName
     /*-----------------------------------------------------
      *    Counterstrike Chat
      *----------------------------------------------------*/
-    html = await renderTemplate(chatTemplate, csChatData);
+    html = await foundry.applications.handlebars.renderTemplate(chatTemplate, csChatData);
 
     messageData = {
         user: game.user.id,
         speaker: speaker,
         content: html.trim()
     };
-    if (combatResult.outcome.defDice) {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
+    if (combatResult.outcome.defDice) {        
         messageData.sound = CONFIG.sounds.dice;
         messageData.roll = csImpactRoll;
-    } else {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.OTHER;
     }
 
     // Create a chat message
@@ -781,7 +779,7 @@ export async function dodgeResume(atkToken, defToken, type, weaponName, effAML, 
 
     let atkImpactRoll = null;
     if (combatResult.outcome.atkDice) {
-        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate({async: true});
+        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate();
     }
 
     const chatData = {
@@ -818,19 +816,19 @@ export async function dodgeResume(atkToken, defToken, type, weaponName, effAML, 
 
     let chatTemplate = "systems/hm3/templates/chat/attack-result-card.html";
 
-    const html = await renderTemplate(chatTemplate, chatData);
+    const html = await foundry.applications.handlebars.renderTemplate(
+        chatTemplate,
+        chatData
+    );
 
     let messageData = {
         user: game.user.id,
         speaker: speaker,
         content: html.trim()
     };
-    if (combatResult.outcome.atkDice) {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
+    if (combatResult.outcome.atkDice) {        
         messageData.sound = CONFIG.sounds.dice;
         messageData.roll = atkImpactRoll;
-    } else {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.OTHER;
     }
 
     const messageOptions = {};
@@ -838,7 +836,7 @@ export async function dodgeResume(atkToken, defToken, type, weaponName, effAML, 
     // Create a chat message
     await ChatMessage.create(messageData, messageOptions)
     if (!combatResult.outcome.atkDice && game.settings.get('hm3', 'combatAudio')) {
-        AudioHelper.play({src: "systems/hm3/audio/swoosh1.ogg", autoplay: true, loop: false}, true);
+        foundry.audio.AudioHelper.play({src: "systems/hm3/audio/swoosh1.ogg", autoplay: true, loop: false}, true);
     }
 
     return chatData;
@@ -985,7 +983,7 @@ export async function blockResume(atkToken, defToken, type, weaponName, effAML, 
 
     let atkImpactRoll = null;
     if (combatResult.outcome.atkDice) {
-        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate({async: true});
+        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate();
     }
 
     // If there was a block, check whether a weapon broke
@@ -1053,19 +1051,19 @@ export async function blockResume(atkToken, defToken, type, weaponName, effAML, 
 
     let chatTemplate = "systems/hm3/templates/chat/attack-result-card.html";
 
-    const html = await renderTemplate(chatTemplate, chatData);
+    const html = await foundry.applications.handlebars.renderTemplate(
+        chatTemplate,
+        chatData
+    );
 
     let messageData = {
         user: game.user.id,
         speaker: speaker,
         content: html.trim()
     };
-    if (combatResult.outcome.atkDice) {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
+    if (combatResult.outcome.atkDice) {        
         messageData.sound = CONFIG.sounds.dice;
         messageData.roll = atkImpactRoll;
-    } else {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.OTHER;
     }
 
     const messageOptions = {};
@@ -1073,7 +1071,7 @@ export async function blockResume(atkToken, defToken, type, weaponName, effAML, 
     // Create a chat message
     await ChatMessage.create(messageData, messageOptions)
     if (!combatResult.outcome.atkDice && game.settings.get('hm3', 'combatAudio')) {
-        AudioHelper.play({src: "systems/hm3/audio/shield-bash.ogg", autoplay: true, loop: false}, true);
+        foundry.audio.AudioHelper.play({src: "systems/hm3/audio/shield-bash.ogg", autoplay: true, loop: false}, true);
     }
 
     return chatData;
@@ -1100,8 +1098,8 @@ export async function checkWeaponBreak(atkWeapon, defWeapon) {
     const atkWeaponQuality = atkWeapon.system.weaponQuality;
     const defWeaponQuality = defWeapon.system.weaponQuality;
 
-    const atkBreakRoll = await new Roll('3d6').evaluate({async: true});
-    const defBreakRoll = await new Roll('3d6').evaluate({async: true});
+    const atkBreakRoll = await new Roll('3d6').evaluate();
+    const defBreakRoll = await new Roll('3d6').evaluate();
 
     if (atkWeaponQuality <= defWeaponQuality) {
         // Check attacker first, then defender
@@ -1117,7 +1115,6 @@ export async function checkWeaponBreak(atkWeapon, defWeapon) {
 
     const messageData = {
         user: game.user.id,
-        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
         sound: CONFIG.sounds.dice
     };
 
@@ -1133,11 +1130,11 @@ export async function checkWeaponBreak(atkWeapon, defWeapon) {
     chatData.actorId = atkWeapon.parent;
     chatData.title = "Attack Weapon Break Check";
 
-    let html = await renderTemplate(chatTemplate, chatData);
+    let html = await foundry.applications.handlebars.renderTemplate(chatTemplate, chatData);
 
     messageData.content = html.trim();
     messageData.speaker = ChatMessage.getSpeaker({token: defToken.document});
-    messageData.roll = atkBreakRoll;
+    messageData.rolls = [atkBreakRoll];
 
     const messageOptions = {};
 
@@ -1151,13 +1148,16 @@ export async function checkWeaponBreak(atkWeapon, defWeapon) {
     chatData.weaponBroke = defWeaponBroke;
     chatData.rollValue = defBreakRoll.total;
     chatData.actorId = defWeapon.parent;
-    chatData.title = "Defend Weapon Break Check";
+    chatData.title = "Defend Weapon Break Check";  
 
-    html = await renderTemplate(chatTemplate, chatData);
+    html = await foundry.applications.handlebars.renderTemplate(
+        chatTemplate,
+        chatData
+    );
 
     messageData.content = html.trim();
     messageData.speaker = ChatMessage.getSpeaker({token: defToken.document});
-    messageData.roll = defBreakRoll;
+    messageData.rolls = [defBreakRoll];
 
     await ChatMessage.create(messageData, messageOptions);
 
@@ -1249,19 +1249,19 @@ export async function ignoreResume(atkToken, defToken, type, weaponName, effAML,
 
     let chatTemplate = "systems/hm3/templates/chat/attack-result-card.html";
 
-    const html = await renderTemplate(chatTemplate, chatData);
+    const html = await foundry.applications.handlebars.renderTemplate(
+        template,
+        data
+    );
 
     let messageData = {
         user: game.user.id,
         speaker: speaker,
         content: html.trim()
     };
-    if (combatResult.outcome.atkDice) {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.ROLL;
+    if (combatResult.outcome.atkDice) {        
         messageData.sound = CONFIG.sounds.dice;
         messageData.roll = atkImpactRoll;
-    } else {
-        messageData.type = CONST.CHAT_MESSAGE_TYPES.OTHER;
     }
 
     const messageOptions = {};
@@ -1487,26 +1487,51 @@ export async function getItem(itemName, type, actor) {
  * @param {Token} targetToken
  * @param {Boolean} gridUnits If true, return in grid units, not "scene" units
  */
-export function rangeToTarget(sourceToken, targetToken, gridUnits=false) {
-    if (!sourceToken || !targetToken || !canvas.scene || !canvas.scene.grid) return 9999;
+export function rangeToTarget(sourceToken, targetToken, gridUnits = false) {
+    if (!sourceToken || !targetToken || !canvas.scene) return 9999;
 
-    // If the current scene is marked "Theatre of the Mind", then range is always 0
     if (canvas.scene.getFlag('hm3', 'isTotm')) return 0;
 
     const sToken = canvas.tokens.get(sourceToken.id);
     const tToken = canvas.tokens.get(targetToken.id);
 
-    const segments = [];
-    const source = sToken.center;
-    const dest = tToken.center;
-    const ray = new Ray(source, dest);
-    segments.push({ray});
-    const distances = canvas.grid.measureDistances(segments, {gridSpaces: true});
-    const distance = distances[0];
-    console.log(`Distance = ${distance}, gridUnits=${gridUnits}`);
-    if (gridUnits) return Math.round(distance / canvas.dimensions.distance);
-    return distance;
+    if (!sToken || !tToken) return 9999;
+
+    const path = canvas.grid.getDirectPath([
+        sToken.center,
+        tToken.center
+    ]);
+
+    const gridDistance = Math.max(path.length - 1, 0);
+
+    console.log(
+        `Grid Distance=${gridDistance}, gridUnits=${gridUnits}`
+    );
+
+    if (gridUnits) return gridDistance;
+
+    return gridDistance * canvas.scene.grid.distance;
 }
+//export function rangeToTarget(sourceToken, targetToken, gridUnits=false) {
+//    if (!sourceToken || !targetToken || !canvas.scene || !canvas.scene.grid) return 9999;
+
+//    // If the current scene is marked "Theatre of the Mind", then range is always 0
+//    if (canvas.scene.getFlag('hm3', 'isTotm')) return 0;
+
+//    const sToken = canvas.tokens.get(sourceToken.id);
+//    const tToken = canvas.tokens.get(targetToken.id);
+
+//    const segments = [];
+//    const source = sToken.center;
+//    const dest = tToken.center;
+//    const ray = new Ray(source, dest);
+//    segments.push({ray});
+//    const distances = canvas.grid.measureDistances(segments, {gridSpaces: true});
+//    const distance = distances[0];
+//    console.log(`Distance = ${distance}, gridUnits=${gridUnits}`);
+//    if (gridUnits) return Math.round(distance / canvas.dimensions.distance);
+//    return distance;
+//}
 
 /**
  * Optionally hide the display of chat card action buttons which cannot be performed by the user

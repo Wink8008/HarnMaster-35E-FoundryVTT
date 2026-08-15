@@ -50,7 +50,7 @@ export class HarnMasterActor extends Actor {
         const type = data.type || defaultType;
 
         // Render the document creation form
-        const html = await renderTemplate(`templates/sidebar/document-create.html`, {
+        const html = await foundry.applications.handlebars.renderTemplate(`templates/sidebar/document-create.html`, {
             folders,
             name: data.name || "",
             defaultName: this.implementation.defaultName({type, parent, pack}),

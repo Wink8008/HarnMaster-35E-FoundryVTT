@@ -390,7 +390,7 @@ export async function testAbilityD6Roll(ability, noDialog = false, myActor=null)
     if (hooksOk) {
         const result = await DiceHM3.d6Roll(stdRollData);
         if (result) {
-            result.runCustomMacro(result);
+            actorInfo.actor.runCustomMacro(result);
             callOnHooks("hm3.onAbilityRollD6", result, result, stdRollData);    
         }
         return result;

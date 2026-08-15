@@ -7,7 +7,7 @@ import { HM3 } from './config.js';
  * @param {ActiveEffect} object     The target active effect being configured
  * @param {object} [options]        Additional options which modify this application instance
  */
-export class HM3ActiveEffectConfig extends ActiveEffectConfig {
+export class HM3ActiveEffectConfig extends foundry.applications.sheets.ActiveEffectConfig {
 
     /** @override */
     static get defaultOptions() {

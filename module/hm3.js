@@ -14,6 +14,13 @@ import * as macros from "./macros.js";
 import * as combat from "./combat.js";
 import * as effect from "./effect.js";
 import { DiceHM3 } from "./dice-hm3.js";
+const ActorSheetV1 = foundry.appv1.sheets.ActorSheet;
+const ItemSheetV1 = foundry.appv1.sheets.ItemSheet;
+const ActorsCollection = foundry.documents.collections.Actors;
+const ItemsCollection = foundry.documents.collections.Items;
+const ActiveEffectSheetClass = foundry.applications.sheets.ActiveEffectConfig;
+const DocumentSheetConfigClass = foundry.applications.apps.DocumentSheetConfig;
+const FormDataExt = foundry.applications.ux.FormDataExtended;
 
 Hooks.once('init', async function () {
 
@@ -83,31 +90,31 @@ Hooks.once('init', async function () {
     //})
 
     // Register sheet application classes
-    Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("hm3", HarnMasterCharacterSheet, {
+    ActorsCollection.unregisterSheet("core", ActorSheetV1);
+    ActorsCollection.registerSheet("hm3", HarnMasterCharacterSheet, {
         types: ["character"],
         makeDefault: true,
         label: "Default HarnMaster Character Sheet"
     });
-    Actors.registerSheet("hm3", HarnMasterCreatureSheet, {
+    ActorsCollection.registerSheet("hm3", HarnMasterCreatureSheet, {
         types: ["creature"],
         makeDefault: true,
         label: "Default HarnMaster Creature Sheet"
     });
-    Actors.registerSheet("hm3", HarnMasterContainerSheet, {
+    ActorsCollection.registerSheet("hm3", HarnMasterContainerSheet, {
         types: ["container"],
         makeDefault: true,
         label: "Default HarnMaster Container Sheet"
     });
 
-    DocumentSheetConfig.unregisterSheet(ActiveEffect, "core", ActiveEffectConfig);
-    DocumentSheetConfig.registerSheet(ActiveEffect, "hm3", HM3ActiveEffectConfig, {
+    DocumentSheetConfigClass.unregisterSheet(ActiveEffect, "core", ActiveEffectSheetClass);
+    DocumentSheetConfigClass.registerSheet(ActiveEffect, "hm3", HM3ActiveEffectConfig, {
         makeDefault: true,
         label: "Default HarnMaster Active Effect Sheet"
     });
 
-    Items.unregisterSheet("core", ItemSheet);
-    Items.registerSheet("hm3", HarnMasterItemSheet, { makeDefault: true });
+    ItemsCollection.unregisterSheet("core", ItemSheetV1);
+    ItemsCollection.registerSheet("hm3", HarnMasterItemSheet, { makeDefault: true });
 
     // If you need to add Handlebars helpers, here are a few useful examples:
     Handlebars.registerHelper('concat', function () {
@@ -156,9 +163,12 @@ Hooks.once('init', async function () {
 
 });
 
-Hooks.on("renderChatMessage", (app, html, data) => {
-    // Display action buttons
-    combat.displayChatActionButtons(app, html, data);
+//Hooks.on("renderChatMessage", (app, html, data) => {
+//    // Display action buttons
+//    combat.displayChatActionButtons(app, html, data);
+//});
+Hooks.on("renderChatMessageHTML", (message, html, data) => {
+    combat.displayChatActionButtons(message, $(html), data);
 });
 //Hooks.on('renderChatLog', (app, html, data) => HarnMasterActor.chatListeners(html));
 //Hooks.on('renderChatPopout', (app, html, data) => HarnMasterActor.chatListeners(html));
@@ -256,8 +266,9 @@ Hooks.on('closeSceneConfig', (app, html, data) => {
 
 async function welcomeDialog() {
     const dlgTemplate = 'systems/hm3/templates/dialog/welcome.html';
-    const html = await renderTemplate(dlgTemplate, {});
+    const html = await foundry.applications.handlebars.renderTemplate(dlgTemplate, {});
 
+    // TODO: Convert Dialog to ApplicationV2 when targeting Foundry V16
     // Create the dialog window
     return Dialog.prompt({
         title: 'Welcome!',
@@ -265,7 +276,7 @@ async function welcomeDialog() {
         label: 'OK',
         callback: html => {
             const form = html.querySelector("#welcome");
-            const fd = new FormDataExtended(form);
+            const fd = new FormDataExt(form);
             const data = fd.object;
             return data.showOnStartup;
         },

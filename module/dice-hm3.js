@@ -81,15 +81,17 @@ export class DiceHM3 {
             roll: roll
         };
 
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );       
 
         const messageData = {
             user: game.user.id,
-            speaker: speaker,
+            speaker,
             content: html.trim(),
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
             sound: CONFIG.sounds.dice,
-            roll: roll.rollObj
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -118,7 +120,10 @@ export class DiceHM3 {
             target: dialogOptions.target,
             modifier: dialogOptions.modifier
         };
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        const html = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
         
         // Create the dialog window
         return Dialog.prompt({
@@ -215,15 +220,17 @@ export class DiceHM3 {
             roll: roll
         };
 
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );       
 
         const messageData = {
             user: game.user.id,
             speaker: speaker,
-            content: html.trim(),
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            content: html.trim(),            
             sound: CONFIG.sounds.dice,
-            roll: roll.rollObj
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -251,8 +258,11 @@ export class DiceHM3 {
         let dialogData = {
             target: dialogOptions.target,
             modifier: dialogOptions.modifier
-        };
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        };        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
         
         // Create the dialog window
         return Dialog.prompt({
@@ -305,16 +315,18 @@ export class DiceHM3 {
         if (specMatch && isSuccess) {
             chatTemplateData.notes = `Since this is a specialized skill of ${specMatch[1]}, ML will be increased by 2`
         }
-
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );
 
         const messageData = {
             speaker: speaker,
             content: html.trim(),
-            user: game.user.id,
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            user: game.user.id,            
             sound: CONFIG.sounds.dice,
-            roll: roll
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -374,14 +386,16 @@ export class DiceHM3 {
             title: `${rollData.actor.token ? rollData.actor.token.name : rollData.actor.name} Injury`,
             visibleActorId: rollData.actor.id
         }, result);
-
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+                
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );
 
         const messageData = {
             speaker: speaker,
             content: html.trim(),
-            user: game.user.id,
-            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+            user: game.user.id,            
             sound: CONFIG.sounds.notify
         };
 
@@ -392,7 +406,7 @@ export class DiceHM3 {
         // Create a chat message
         await ChatMessage.create(messageData, messageOptions);
         if (game.settings.get("hm3", "combatAudio")) {
-            AudioHelper.play({src: "systems/hm3/audio/grunt1.ogg", autoplay: true, loop: false}, true);
+            foundry.audio.AudioHelper.play({src: "systems/hm3/audio/grunt1.ogg", autoplay: true, loop: false}, true);
         }
         return chatTemplateData;
     }
@@ -481,8 +495,11 @@ export class DiceHM3 {
             askRecordInjury:  recordInjury === 'ask',
             hitLocations: dialogOptions.hitLocations
         };
-
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
 
         // Create the dialog window
         return Dialog.prompt({
@@ -777,15 +794,18 @@ export class DiceHM3 {
             notes: renderedNotes,
             roll: roll
         };
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );
 
         const messageData = {
             user: game.user.id,
             speaker: speaker,
             content: html.trim(),
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
             sound: CONFIG.sounds.dice,
-            roll: roll.rollObj
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -865,7 +885,11 @@ export class DiceHM3 {
             weaponAspects: dialogOptions.weaponAspects,
             addlWeaponImpact: 0
         };
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
         
         // Create the dialog window
         return Dialog.prompt({
@@ -947,15 +971,17 @@ export class DiceHM3 {
             notes: renderedNotes,
             roll: roll
         };
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        const html = await foundry.applications.handlebars.renderTemplate(
+            chatTemplate,
+            chatTemplateData
+        );
 
         const messageData = {
             user: game.user.id,
             speaker: speaker,
             content: html.trim(),
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
             sound: CONFIG.sounds.dice,
-            roll: roll.rollObj
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -990,8 +1016,11 @@ export class DiceHM3 {
         dialogData.ranges[extremeDesc] = 'Extreme';
         dialogData.rangeExceedsExtreme = false;
         dialogData.defaultRange = extremeDesc;
-
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        
+        const html = await foundry.applications.handlebars.renderTemplate(
+            dlgTemplate,
+            dialogData
+        );
         const title = `${dialogOptions.name} Attack`;
 
         // Create the dialog window
@@ -1114,15 +1143,14 @@ export class DiceHM3 {
             notes: renderedNotes,
             roll: roll
         };
-        const html = await renderTemplate(chatTemplate, chatTemplateData);
+        const html = await foundry.applications.handlebars.renderTemplate(chatTemplate, chatTemplateData);        
 
         const messageData = {
             user: game.user.id,
             speaker: speaker,
             content: html.trim(),
-            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
             sound: CONFIG.sounds.dice,
-            roll: roll.rollObj
+            rolls: [roll.rollObj]
         };
 
         const messageOptions = {
@@ -1144,7 +1172,7 @@ export class DiceHM3 {
             ranges: dialogOptions.ranges,
             defaultRange: dialogOptions.defaultRange
         };
-        const html = await renderTemplate(dlgTemplate, dialogData);
+        const html = await foundry.applications.handlebars.renderTemplate(dlgTemplate, dialogData);        
         
         const title = `${dialogOptions.name} Missile Damage`;
 
@@ -1187,8 +1215,8 @@ export class DiceHM3 {
         const diceType = testData.diceSides === 6 ? "d6" : "d100";
         const numDice = (testData.diceNum > 0) ? testData.diceNum : 1;
         const diceSpec = numDice + diceType;
-        const rollObj = new Roll(diceSpec, testData.data);
-        const roll = await rollObj.evaluate({async: true});
+        const rollObj = new Roll(diceSpec, testData.data);        
+        const roll = await rollObj.evaluate();
         if (!roll) {
             console.error(`Roll evaluation failed, diceSpec=${diceSpec}`)
         }

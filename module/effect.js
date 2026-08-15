@@ -21,7 +21,7 @@ export async function onManageActiveEffect(event, owner) {
                 dialogData.combatRound = game.combat.round;
                 dialogData.combatTurn = game.combat.turn;
             }
-            const html = await renderTemplate(dlgTemplate, dialogData);
+            const html = await foundry.applications.handlebars.renderTemplate(dlgTemplate, dialogData);            
     
             // Create the dialog window
             return Dialog.prompt({

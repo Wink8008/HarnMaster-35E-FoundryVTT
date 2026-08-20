@@ -81,18 +81,22 @@
                     <label class="resource-label">Piercing</label>
                     <input type="number" name="system.piercing" value="{{idata.piercing}}" data-dtype="Number" />
                 </div>
-               <div class="resource" id="weapongear-assocskill">
+                <div class="resource" id="weapongear-assocskill">
                     <label class="resource-label" for="system.assocSkill">Associated Skill</label>
                     {{#if hasCombatSkills}}
-                        <select class="resource-value" name="system.assocSkill" data-dtype="String">
-                            {{#select idata.assocSkill}}
-                                {{#each combatSkills}}
-                                    <option value="{{this}}">{{this}}</option>
-                                {{/each}}
-                            {{/select}}
-                        </select>
+                    <select class="resource-value" name="system.assocSkill" data-dtype="String">
+                        {{#each combatSkills}}
+                        <option value="{{this}}"
+                                {{#if (eq this ../idata.assocSkill)}} selected{{/if}}>
+                            {{this}}
+                        </option>
+                        {{/each}}
+                    </select>
                     {{else}}
-                        <input type="text" name="system.assocSkill" value="{{idata.assocSkill}}" data-dtype="String" />
+                    <input type="text"
+                           name="system.assocSkill"
+                           value="{{idata.assocSkill}}"
+                           data-dtype="String" />
                     {{/if}}
                 </div>
             </div>

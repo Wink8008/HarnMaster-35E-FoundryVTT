@@ -1,25 +1,25 @@
 {
   "id": "hm3",
-  "title": "HarnMaster 3",
-  "description": "The HarnMaster system for FoundryVTT!",
-  "version": "1.6.3",
+  "title": "HarnMaster 3.5 Enhanced",
+  "description": "The HarnMaster system for FoundryVTT with enhanced and optional rules!",
+  "version": "1.0.0",
   "authors": [
     {
-      "name": "Toasty",
-      "discord": "toasty#8538",
+      "name": "Wink8008",
+      "discord": "Wink88",
       "flags": {}
     }
   ],
-  "url": "https://github.com/toastygm/HarnMaster-3-FoundryVTT/",
+  "url": "https://github.com/Wink8008/HarnMaster-35E-FoundryVTT",
   "license": "LICENSE",
   "readme": "README.md",
-  "bugs": "https://github.com/toastygm/HarnMaster-3-FoundryVTT/issues",
+  "bugs": "https://github.com/Wink8008/HarnMaster-35E-FoundryVTT/issues",
   "flags": {
     "allowBugReporter": true
   },
   "compatibility": {
-    "minimum": "12",
-    "verified": "12.331"
+    "minimum": "14",
+    "verified": "14.367"
   },
   "esmodules": [
     "module/hm3.js"

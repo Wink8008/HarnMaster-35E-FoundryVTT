@@ -48,3 +48,6 @@ foundryconfig.json
 
 # TODO List
 TODO.txt
+
+# releases folder
+/releases/

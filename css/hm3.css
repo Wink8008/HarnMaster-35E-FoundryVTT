@@ -2006,8 +2006,8 @@ section.highlight {
 .hm3 .armor-locations-list .armor-location {
   display: block;
 }
-.hm3 .effects .disabled {
-  color: #9a998f;
+.hm3 .effects .hm3-effect-disabled {
+    color: #9a998f;
 }
 .hm3 .effects .effects-list {
   list-style: none;

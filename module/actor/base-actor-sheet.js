@@ -89,18 +89,17 @@ export class HarnMasterBaseActorSheet extends ActorSheetV1 {
 
         // get active effects.
         data.effects = {};
+
         this.actor.effects.forEach(effect => {
-            effect._getSourceName().then(() => {
-                data.effects[effect.id] = {
-                    'id': effect.id,
-                    'label': effect.label,
-                    'sourceName': effect.sourceName,
-                    'duration': utility.aeDuration(effect),
-                    'source': effect,
-                    'changes': utility.aeChanges(effect)
-                }
-                data.effects[effect.id].disabled = effect.disabled;
-            });
+            data.effects[effect.id] = {
+                id: effect.id,
+                label: effect.name,
+                sourceName: effect.sourceName,
+                duration: utility.aeDuration(effect),
+                source: effect,
+                changes: utility.aeChanges(effect),
+                disabled: effect.disabled
+            };
         });
 
         return data;

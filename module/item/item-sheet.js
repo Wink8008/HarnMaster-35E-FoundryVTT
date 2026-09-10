@@ -109,17 +109,16 @@ export class HarnMasterItemSheet extends ItemSheetV1 {
       }
     }
 
-    data.effects = {};
-    this.item.effects.forEach(effect => {
-      effect._getSourceName().then(()=> {
-        data.effects[effect.id] = {
-          'source': effect.sourceName,
-          'duration': utility.aeDuration(effect),
-          'data': effect,
-          'changes': utility.aeChanges(effect)
-        }
-      })
-    });
+      data.effects = {};
+
+      this.item.effects.forEach(effect => {
+          data.effects[effect.id] = {
+              source: effect.sourceName,
+              duration: utility.aeDuration(effect),
+              data: effect,
+              changes: utility.aeChanges(effect)
+          };          
+      });
 
     return data;
   }
@@ -133,13 +132,13 @@ export class HarnMasterItemSheet extends ItemSheetV1 {
     const bodyHeight = position.height - 192;
     sheetBody.css("height", bodyHeight);
     return position;
-  }
+    }    
 
   /* -------------------------------------------- */
 
-  /** @override */
-  activateListeners(html) {
-    super.activateListeners(html);
+  /** @override */ 
+    activateListeners(html) {
+        super.activateListeners(html);
 
     // Everything below here is only needed if the sheet is editable
     if (!this.options.editable) return;
@@ -158,8 +157,7 @@ export class HarnMasterItemSheet extends ItemSheetV1 {
     });
 
     html.find(".effect-control").click(ev => {
-      if ( this.item.isOwned ) return ui.notifications.warn("You cannot change an Item's Effects after it is associated with an Actor. To modify this Effect, go to the Actor's Effects tab.")
-      onManageActiveEffect(ev, this.item)
+        onManageActiveEffect(ev, this.item);
     });
 
     // Add Inventory Item

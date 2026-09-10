@@ -26,59 +26,83 @@
     </nav>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body skill-body">
+<section class="sheet-body skill-body">
 
-        {{!-- Properties Tab --}}
-        <div class="tab properties" data-group="primary" data-tab="properties">
-            <div class="resource">
-                <label class="resource-label">Source</label>
-                <input type="text" name="system.source" value="{{idata.source}}" data-dtype="String" />
-            </div>
-            <div class="resource">
-                <label class="resource-label">Note</label>
-                <input type="text" name="system.notes" value="{{idata.notes}}" data-dtype="String" />
-            </div>
+    {{!-- Properties Tab --}}
+    <div class="tab properties" data-group="primary" data-tab="properties">
+        <div class="resource">
+            <label class="resource-label">Source</label>
+            <input type="text" name="system.source" value="{{idata.source}}" data-dtype="String" />
         </div>
-
-        {{!-- Description Tab --}}
-        <div class="tab description" data-group="primary" data-tab="description">
-            {{editor idata.description target="system.description" button=true owner=owner editable=editable}}
+        <div class="resource">
+            <label class="resource-label">Note</label>
+            <input type="text" name="system.notes" value="{{idata.notes}}" data-dtype="String" />
         </div>
+    </div>
 
-        {{!-- Effects Tab --}}
-        <div class="tab effects" data-group="primary" data-tab="effects">
-            <ol class="effects-list">
-                <li class="effects-header flexrow">
-                    <h3 class="effect-name flexrow">Effect</h3>
-                    <div class="effect-duration">Duration</div>
-                    <div class="effect-changes">Changes</div>
-                    <a class="effect-controls effect-control" title="Add Effect"
-                        data-action="{{#unless hasActor}}create{{/unless}}"><span
-                            class="{{#unless hasActor}}active{{/unless}}"><i class="fas fa-plus"></i> Add</span></a>
+    {{!-- Description Tab --}}
+    <div class="tab description" data-group="primary" data-tab="description">
+        {{editor idata.description target="system.description" button=true owner=owner editable=editable}}
+    </div>
+
+    {{!-- Effects Tab --}}
+    <div class="tab effects" data-group="primary" data-tab="effects">
+        <ol class="effects-list">
+            <li class="effects-header flexrow">
+                <h3 class="effect-name flexrow">Effect</h3>
+                <div class="effect-duration">Duration</div>
+                <div class="effect-changes">Changes</div>
+
+                <a class="effect-controls effect-control"
+                   title="Add Effect"
+                   data-action="{{#unless hasActor}}create{{/unless}}">
+                    <span class="{{#unless hasActor}}active{{/unless}}">
+                        <i class="fas fa-plus"></i> Add
+                    </span>
+                </a>
+            </li>
+
+            <ol class="effect-list item-list">
+                {{#each effects as |effect id|}}
+                <li class="effect {{#if effect.data.disabled}}hm3-effect-disabled{{/if}} flexrow"
+                    data-effect-id="{{effect.data._id}}">
+
+                    <div class="effect-name flexrow">
+                        <div class="effect-image"
+                             style="background-image: url('{{effect.data.icon}}')"></div>
+                        <h4>{{effect.data.name}}</h4>
+                    </div>
+
+                    <div class="effect-ele effect-duration">
+                        {{effect.duration.label}}
+                    </div>
+
+                    <div class="effect-ele effect-changes">
+                        {{effect.changes}}
+                    </div>
+
+                    <div class="effect-controls">
+
+                        <a class="effect-control"
+                           data-action="{{#unless hasActor}}toggle{{/unless}}">
+                            <i class="{{#unless (or effect.data.disabled hasActor)}}active{{/unless}} fas fa-circle-notch"></i>
+                        </a>
+
+                        <a class="effect-control"
+                           data-action="{{#unless hasActor}}edit{{/unless}}">
+                            <i class="{{#unless hasActor}}active{{/unless}} fas fa-edit"></i>
+                        </a>
+
+                        <a class="effect-control"
+                           data-action="{{#unless hasActor}}delete{{/unless}}">
+                            <i class="{{#unless hasActor}}active{{/unless}} fas fa-trash"></i>
+                        </a>
+
+                    </div>
                 </li>
-
-                <ol class="effect-list item-list">
-                    {{#each effects as |effect id|}}
-                        <li class="effect {{#if effect.data.disabled}}disabled{{/if}} flexrow"
-                            data-effect-id="{{effect.data._id}}">
-                            <div class="effect-name flexrow">
-                                <div class="effect-image" style="background-image: url('{{effect.data.icon}}')"></div>
-                                <h4>{{effect.data.label}}</h4>
-                            </div>
-                            <div class="effect-ele effect-duration">{{effect.duration.label}}</div>
-                            <div class="effect-ele effect-changes">{{effect.changes}}</div>
-                            <div class="effect-controls">
-                                <a class="effect-control" data-action="toggle"><i
-                                        class="{{#unless (or effect.data.disabled hasActor)}}active{{/unless}} fas fa-circle-notch"></i></a>
-                                <a class="effect-control" data-action="edit"><i
-                                        class="{{#unless hasActor}}active{{/unless}} fas fa-edit"></i></a>
-                                <a class="effect-control" data-action="delete"><i
-                                        class="{{#unless hasActor}}active{{/unless}} fas fa-trash"></i></a>
-                            </div>
-                        </li>
-                    {{/each}}
-                </ol>
+                {{/each}}
             </ol>
-        </div>
-    </section>
+        </ol>
+    </div>
+</section>
 </form>

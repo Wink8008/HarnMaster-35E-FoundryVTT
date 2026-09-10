@@ -2,7 +2,7 @@
   "id": "hm3",
   "title": "HarnMaster 3.5 Enhanced",
   "description": "The HarnMaster system for FoundryVTT with enhanced and optional rules!",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "authors": [
     {
       "name": "Wink8008",
@@ -99,7 +99,7 @@
   ],
   "socket": true,
   "manifest": "https://github.com/Wink8008/HarnMaster-35E-FoundryVTT/releases/latest/download/system.json",
-  "download": "https://github.com/Wink8008/HarnMaster-35E-FoundryVTT/releases/download/v1.4.1/hm3-1.4.1.zip",
+  "download": "https://github.com/Wink8008/HarnMaster-35E-FoundryVTT/releases/download/1.4.2/hm3-1.4.2.zip",
   "grid": {
     "distance": 5,
     "units": "ft"

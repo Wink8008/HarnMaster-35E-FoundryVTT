@@ -6,112 +6,153 @@
  * @param {Actor|Item} owner      The owning document which manages this effect
  */
 export async function onManageActiveEffect(event, owner) {
-    event.preventDefault();
+    event.preventDefault();    
+
     const a = event.currentTarget;
     const li = a.closest("li");
     const effect = li.dataset.effectId ? owner.effects.get(li.dataset.effectId) : null;
+
+    if (!effect && a.dataset.action !== "create") return;
+
     switch (a.dataset.action) {
-        case "create":
+        case "create": {
             const dlgTemplate = "systems/hm3/templates/dialog/active-effect-start.html";
+
             const dialogData = {
                 gameTime: game.time.worldTime
             };
+
             if (game.combat) {
                 dialogData.combatId = game.combat.id;
                 dialogData.combatRound = game.combat.round;
                 dialogData.combatTurn = game.combat.turn;
             }
-            const html = await foundry.applications.handlebars.renderTemplate(dlgTemplate, dialogData);            
-    
+
+            const html = await foundry.applications.handlebars.renderTemplate(
+                dlgTemplate,
+                dialogData
+            );
+
             // Create the dialog window
             return Dialog.prompt({
                 title: "Select Start Time",
                 content: html,
                 label: "OK",
                 callback: async (html) => {
-                    const form = html.querySelector('#active-effect-start');
-                    const fd = new FormDataExtended(form);
+                    const form = html.querySelector("#active-effect-start");
+                    const fd = new foundry.applications.ux.FormDataExtended(form);
                     const formdata = fd.object;
                     const startType = formdata.startType;
 
                     const aeData = {
-                        label: "New Effect",
+                        name: "New Effect",
                         icon: "icons/svg/aura.svg",
-                        origin: owner.uuid
+                        origin: owner.uuid,
+                        duration: {
+                            units: "seconds",
+                            value: null,
+                            expiry: null
+                        },
+                        start: ActiveEffect.getEffectStart(game.combat)
                     };
-                    if (startType === 'nowGameTime') {
-                        aeData['duration.startTime'] = dialogData.gameTime;
-                        aeData['duration.seconds'] = 1;
-                    } else if (startType === 'nowCombat') {
-                        aeData['duration.combat'] = dialogData.combatId;
-                        aeData['duration.startRound'] = dialogData.combatRound;
-                        aeData['duration.startTurn'] = dialogData.combatTurn;
-                        aeData['duration.rounds'] = 1;
-                        aeData['duration.turns'] = 0;
+
+                    if (startType === "nowGameTime") {
+                        aeData.duration = {
+                            units: "seconds",
+                            value: 1,
+                            expiry: null
+                        };
+
+                        aeData.start = {
+                            time: dialogData.gameTime,
+                            combat: null,
+                            combatant: null,
+                            initiative: null,
+                            round: null,
+                            turn: null
+                        };
                     }
-                    return ActiveEffect.create(aeData, {parent: owner});
+                    else if (startType === "nowCombat") {
+                        aeData.duration = {
+                            units: "rounds",
+                            value: 1,
+                            expiry: "turnStart"
+                        };
+
+                        aeData.start = {
+                            time: dialogData.gameTime,
+                            combat: dialogData.combatId,
+                            combatant: game.combat?.combatant?.id ?? null,
+                            initiative: game.combat?.combatant?.initiative ?? null,
+                            round: dialogData.combatRound,
+                            turn: dialogData.combatTurn
+                        };
+                    }
+
+                    return ActiveEffect.create(aeData, { parent: owner });                    
                 },
                 options: { jQuery: false }
+            }).catch(error => {
+                if (error?.message === "The Dialog was closed without a choice being made.") {
+                    return null;
+                }
+
+                throw error;
             });
+        }
+
         case "edit":
             return effect.sheet.render(true);
+
         case "delete":
             return effect.delete();
-        case "toggle":
-            const updateData = {};
-            if (effect.disabled) {
-                // Enable the Active Effect
-                updateData['disabled'] = false;
 
-                // Also set the timer to start now
-                updateData['duration.startTime'] = game.time.worldTime;
+        case "toggle": {
+            const updateData = {
+                disabled: !effect.disabled
+            };
+
+            if (effect.disabled) {
+                updateData["start.time"] = game.time.worldTime;
+
                 if (game.combat) {
-                    updateData['duration.startRound'] = game.combat.round;
-                    updateData['duration.startTurn'] = game.combat.turn;
+                    updateData["start.combat"] = game.combat.id;
+                    updateData["start.combatant"] = game.combat.combatant?.id ?? null;
+                    updateData["start.initiative"] = game.combat.combatant?.initiative ?? null;
+                    updateData["start.round"] = game.combat.round;
+                    updateData["start.turn"] = game.combat.turn;
+                } else {
+                    updateData["start.combat"] = null;
+                    updateData["start.combatant"] = null;
+                    updateData["start.initiative"] = null;
+                    updateData["start.round"] = null;
+                    updateData["start.turn"] = null;
+                }
+            }
+
+            return effect.update(updateData);
+        }        
+
+            const updateData = {};
+
+            if (effect.disabled) {
+                updateData.disabled = false;
+                updateData["duration.startTime"] = game.time.worldTime;
+
+                if (game.combat) {
+                    updateData["duration.startRound"] = game.combat.round;
+                    updateData["duration.startTurn"] = game.combat.turn;
                 }
             } else {
-                // Disable the Active Effect
-                updateData['disabled'] = true;
-            }
-            return effect.update(updateData);
-    }
-}
+                updateData.disabled = true;
+            }            
 
-/**
- * This function searches all actors and tokens that are owned
- * by the user and disables them if their duration has expired.
- */
-export async function checkExpiredActiveEffects() {
-    // Handle game actors first
-    for (let actor of game.actors.values()) {
-        if (actor.isOwner && actor.effects?.size) {
-            await disableExpiredAE(actor);
-        }
-    }
+            try {
+                const result = await effect.update(updateData);
 
-    // Next, handle tokens (only unlinked tokens)
-    for (let token of canvas.tokens.ownedTokens.values()) {
-        if (!token.document.actorLink && token.actor?.effects?.size) {
-            await disableExpiredAE(token.actor);
-        }
-    }
-}
-
-/**
- * Checks all of the active effects for a single actor and disables
- * them if their duration has expired.
- * 
- * @param {Actor} actor 
- */
-async function disableExpiredAE(actor) {
-    for (let effect of actor.effects.values()) {
-        if (!effect.disabled) {
-            const duration = effect.duration;
-            if (duration.type !== 'none') {
-                if (duration.remaining <= 0) {
-                    await effect.update({'disabled': true});
-                }
+                return result;
+            } catch (error) {                
+                throw error;
             }
         }
     }
-}

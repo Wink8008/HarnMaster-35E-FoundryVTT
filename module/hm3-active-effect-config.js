@@ -1,27 +1,36 @@
 import { HM3 } from './config.js';
 
-/**
- * A form designed for creating and editing an Active Effect on an Actor or Item.
- * @implements {FormApplication}
- *
- * @param {ActiveEffect} object     The target active effect being configured
- * @param {object} [options]        Additional options which modify this application instance
- */
 export class HM3ActiveEffectConfig extends foundry.applications.sheets.ActiveEffectConfig {
 
     /** @override */
-    static get defaultOptions() {
-        return foundry.utils.mergeObject(super.defaultOptions, {
-            template: "systems/hm3/templates/effect/active-effect-config.html",
-        });
-    }
+    async _renderChange(context) {
+        const { change, index } = context;
 
-    /* ----------------------------------------- */
+        // Foundry V14 converts non-string values to JSON strings for rendering.
+        if (("value" in change) && (typeof change.value !== "string")) {
+            change.value = JSON.stringify(change.value);
+        }
 
-    /** @override */
-    async getData(options={}) {
-        const context = await super.getData(options);
+        // Create the same field paths used by Foundry V14.
+        Object.assign(
+            change,
+            ["key", "type", "value", "phase", "priority"].reduce((paths, fieldName) => {
+                if (fieldName in change) {
+                    paths[`${fieldName}Path`] = `system.changes.${index}.${fieldName}`;
+                }
+                return paths;
+            }, {})
+        );
+
+        const changeType = foundry.documents.ActiveEffect.CHANGE_TYPES[change.type];
+        context.changeType = changeType;
+
+        // HârnMaster Attribute Key choices.
         context.keyChoices = HM3.activeEffectKey;
-        return context;
+
+        return foundry.applications.handlebars.renderTemplate(
+            "systems/hm3/templates/effect/active-effect-change.html",
+            context
+        );
     }
 }

@@ -5,7 +5,7 @@ REM ============================================================
 REM HarnMaster 3.5 Enhanced - Foundry V14 Release Builder
 REM ============================================================
 
-set VERSION=1.4.2
+set VERSION=1.4.3
 set SYSTEM=hm3
 set RELEASEDIR=releases\v%VERSION%
 set STAGEDIR=%RELEASEDIR%\hm3

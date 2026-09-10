@@ -1,0 +1,18 @@
+<section class="tab {{tab.cssClass}}" data-tab="changes">
+    <header class="effect-change effects-header flexrow">
+        <div class="key">{{localize "EFFECT.ChangeKey"}}</div>
+        <div class="mode">{{localize "EFFECT.ChangeMode"}}</div>
+        <div class="value">{{localize "EFFECT.ChangeValue"}}</div>
+        <div class="effect-controls">
+            <a class="effect-control" data-action="addChange" data-tooltip="EFFECT.AddChange">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+    </header>
+
+    <ol class="changes-list" data-changes>
+        {{#each changes}}
+        {{{this}}}
+        {{/each}}
+    </ol>
+</section>

@@ -1222,7 +1222,7 @@ export async function ignoreResume(atkToken, defToken, type, weaponName, effAML,
 
     let atkImpactRoll = null;
     if (combatResult.outcome.atkDice) {
-        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate({async: true});
+        atkImpactRoll = await new Roll(`${combatResult.outcome.atkDice}d6`).evaluate();
     }
 
     const chatData = {

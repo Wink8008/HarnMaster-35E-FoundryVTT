@@ -700,7 +700,7 @@ export class DiceHM3 {
             // roll to get a random number.
             let rollWeight = 0;
             if (totalWeight > 0) {
-                rollWeight = Math.floor(MersenneTwister.random()*totalWeight)+1;
+                rollWeight = Math.floor(Math.random()*totalWeight)+1;
             }
 
             // find the location that meets that number

@@ -1260,8 +1260,8 @@ export async function ignoreResume(atkToken, defToken, type, weaponName, effAML,
     let chatTemplate = "systems/hm3/templates/chat/attack-result-card.html";
 
     const html = await foundry.applications.handlebars.renderTemplate(
-        template,
-        data
+        chatTemplate,
+        chatTemplateData
     );
 
     let messageData = {

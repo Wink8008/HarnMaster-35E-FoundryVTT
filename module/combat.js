@@ -1190,7 +1190,7 @@ export async function checkWeaponBreak(atkWeapon, defWeapon) {
 export async function ignoreResume(atkToken, defToken, type, weaponName, effAML, aim, aspect, impactMod) {
     if (!isValidToken(atkToken) || !isValidToken(defToken)) return null;
     if (!defToken.isOwner) {
-        ui.notifications.warn(`You do not have permissions to perform this operation on ${attackToken.name}`);
+        ui.notifications.warn(`You do not have permissions to perform this operation on ${atkToken.name}`);
         return null;
     }
 
@@ -1261,7 +1261,7 @@ export async function ignoreResume(atkToken, defToken, type, weaponName, effAML,
 
     const html = await foundry.applications.handlebars.renderTemplate(
         chatTemplate,
-        chatTemplateData
+        chatData
     );
 
     let messageData = {

@@ -119,8 +119,8 @@ export async function missileAttack(attackToken, defendToken, missileItem) {
     };
 
     const html = await foundry.applications.handlebars.renderTemplate(
-        template,
-        data
+        chatTemplate,
+        chatTemplateData
     );
 
     const messageData = {
@@ -312,6 +312,11 @@ async function selectWeaponDialog(options) {
 
             return {weapon: formWeapon, addlModifier: formAddlModifier};
         }
+    }).catch(error => {
+        if (error?.message === "The Dialog was closed without a choice being made.") {
+            return null;
+        }
+        throw error;
     });
 
 }
@@ -353,7 +358,7 @@ async function attackDialog(options) {
     }
 
     if (!options.weapon) {
-        ui.notifications.warn(`${attackerName} has no equipped weapons available for attack.`);
+        ui.notifications.warn(`${options.attackerName} has no equipped weapons available for attack.`);
         return null;
     }
 
@@ -462,6 +467,11 @@ async function attackDialog(options) {
             }
             return result;
         }
+    }).catch(error => {
+        if (error?.message === "The Dialog was closed without a choice being made.") {
+            return null;
+        }
+        throw error;
     });
 }
 
